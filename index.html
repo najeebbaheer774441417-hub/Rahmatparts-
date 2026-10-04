@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<title>پرزه پروشي رحمت الله اريوبي</title>
+<style>
+.1          index.html           Modified
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>پرزه پروشي رحمت الله اريوبي</title>
+<style>
+body{
+background:#f2f2f2;
+font-family:sans-serif;
+text-align:center;
+}
+.box{
+background:white;
+margin:30px;
+padding:25px;
+border-radius:20px;
+}
+.partBox{
+background:white;
+padding:15px;
+margin:10px 0;
+border-radius:15px;
+box-shadow:0 2px 5px #ccc;
+}
+h1{
+color:#8b2455;
+}
+#partsList p{
+background:white;
+padding:10px;
+margin:10px 0;
+border-radius:10px;
+box-shadow:0 2px 5px #ccc;
+}
+</style>
+</head>
+
+<body>
+<div class="box">
+<h1>پرزه پروشي رحمت الله اريوبي</h1>
+<p>د موټر پرزو معلومات او ځای پیدا کړئ</p>
+
+<input placeholder="د پرزې نوم ولیکئ">
+<button onclick="searchPart()">لټون</button>
+
+<p id="result"></p>
+<div id="partsList"></div>
+<input placeholder="د نوې پرزې نوم">
+<input placeholder="د پرزې موقعیت">
+<button onclick="addPart()">اضافه کړه</button>
+</div>
+<script>
+function searchPart(){
+let part=document.querySelector("input").value;
+let saved=localStorage.getItem(part);
+if(saved){
+document.getElementById("result").innerHTML =
+part+" : "+saved;
+return;
+}
+let info={
+"MAF":"د هوا د فلټر بکس او انټیک پایپ ترمنځ"
+};
+document.getElementById("result").innerHTML=part+" : "+(saved || info[part] || "موقعیت نشته");
+
+}
+function addPart(){
+let inputs=document.querySelectorAll("input");
+let name=inputs[1].value;
+let location=inputs[2].value;
+localStorage.setItem(name, location);
+
+alert("پرزه اضافه شوه");
+showParts();
+}
+function showParts(){
+
+let list=document.getElementById("partsList");
+list.innerHTML="";
+
+for(let i=0; i<localStorage.length; i++){
+
+let name=localStorage.key(i);
+let location=localStorage.getItem(name);
+
+list.innerHTML += "<div class='partBox'>🔧 "+name+" : 📍 "+location+" <button onclick=\"deletePart('"+name+"')\">❌</button></div>";
+
+}
+function deletePart(name){
+localStorage.removeItem(name);
+showParts();
+}
+</script>
+</body>
+</html>
+
