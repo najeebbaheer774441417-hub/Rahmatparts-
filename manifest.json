@@ -1,13 +1,13 @@
 {
   "name": "رحمت پرزه پروشي",
   "short_name": "رحمت پرزې",
-  "start_url": "index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f2f2f2",
   "theme_color": "#333333",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "icon.png",
       "sizes": "192x192",
       "type": "image/png"
     }
