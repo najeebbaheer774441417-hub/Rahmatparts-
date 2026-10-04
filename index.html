@@ -2,103 +2,193 @@
 <html lang="ps" dir="rtl">
 <head>
 <link rel="manifest" href="manifest.json">
+<script>
+if ("serviceWorker" in navigator) {
+navigator.serviceWorker.register("sw.js");
+}
+</script>
 <meta charset="UTF-8">
-<title>پرزه پروشي رحمت الله اريوبي</title>
-<style>
-.1          index.html           Modified
-<!DOCTYPE html>
-<html lang="ps" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<title>پرزه پروشي رحمت الله اريوبي</title>
+<title>رحمت پرزه پروشي</title>
+
 <style>
 body{
-background:#f2f2f2;
-font-family:sans-serif;
-text-align:center;
+    font-family: sans-serif;
+    background:#f2f2f2;
+padding:20px;
+    text-align:center;
+color:#333;
 }
+
 .box{
-background:white;
-margin:30px;
-padding:25px;
-border-radius:20px;
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    max-width:400px;
+    margin:auto;
+    box-shadow:0 0 10px #aaa;
 }
-.partBox{
-background:white;
-padding:15px;
-margin:10px 0;
-border-radius:15px;
-box-shadow:0 2px 5px #ccc;
+
+input,button{
+    width:90%;
+    padding:12px;
+    margin:8px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
 }
-h1{
-color:#8b2455;
-}
-#partsList p{
-background:white;
-padding:10px;
-margin:10px 0;
-border-radius:10px;
-box-shadow:0 2px 5px #ccc;
+
+button{
+    background:#008cba;
+    color:white;
+    border:none;
 }
 </style>
 </head>
 
 <body>
-<div class="box">
-<h1>پرزه پروشي رحمت الله اريوبي</h1>
-<p>د موټر پرزو معلومات او ځای پیدا کړئ</p>
 
-<input placeholder="د پرزې نوم ولیکئ">
+<div class="box">
+
+<h1>🔧 رحمت پرزه پروشي</h1>
+
+<input id="part" placeholder="د پرزې نوم">
+
+<input id="place" placeholder="د پرزې ځای">
+
+<button onclick="addPart()">پرزه اضافه کړه</button>
+
+<hr>
+
+<input id="search" placeholder="د پرزې لټون">
+
 <button onclick="searchPart()">لټون</button>
 
 <p id="result"></p>
-<div id="partsList"></div>
-<input placeholder="د نوې پرزې نوم">
-<input placeholder="د پرزې موقعیت">
-<button onclick="addPart()">اضافه کړه</button>
+<button onclick="backupParts()">💾 بیک اپ</button>
+<input type="file" onchange="restoreParts(event)">
+<h3>ټولې پرزې:</h3>
+<div id="list"></div>
 </div>
+
+
 <script>
-function searchPart(){
-let part=document.querySelector("input").value;
-let saved=localStorage.getItem(part);
-if(saved){
-document.getElementById("result").innerHTML =
-part+" : "+saved;
-return;
-}
-let info={
-"MAF":"د هوا د فلټر بکس او انټیک پایپ ترمنځ"
-};
-document.getElementById("result").innerHTML=part+" : "+(saved || info[part] || "موقعیت نشته");
 
-}
 function addPart(){
-let inputs=document.querySelectorAll("input");
-let name=inputs[1].value;
-let location=inputs[2].value;
-localStorage.setItem(name, location);
 
-alert("پرزه اضافه شوه");
+let part = document.getElementById("part").value;
+let place = document.getElementById("place").value;
+document.getElementById("part").value = "";
+if(part && place){
+document.getElementById("place").value = "";
+localStorage.setItem(part, place);
+
+alert("پرزه وساتل شوه");
+
 showParts();
+
 }
+
+}
+
 function showParts(){
 
-let list=document.getElementById("partsList");
-list.innerHTML="";
+let list = document.getElementById("list");
+list.innerHTML = "";
 
 for(let i=0; i<localStorage.length; i++){
 
-let name=localStorage.key(i);
-let location=localStorage.getItem(name);
-
-list.innerHTML += "<div class='partBox'>🔧 "+name+" : 📍 "+location+" <button onclick=\"deletePart('"+name+"')\">❌</button></div>";
+let part = localStorage.key(i);
+let place = localStorage.getItem(part);
+list.innerHTML +=
+"<div style='padding:8px; margin:5px; background:#eee; border-radius:8px;'>" +
+part + " : " + place +
+"<button onclick=\"deletePart('"+part+"')\">❌</button>" +
+"<button onclick=\"editPart('"+part+"')\">✏️</button>" +
+"</div>";
+}
 
 }
-function deletePart(name){
-localStorage.removeItem(name);
+function deletePart(part){
+  localStorage.removeItem(part);
+  showParts();
+
+}
+
+function editPart(part){
+  let newPlace = prompt("د پرزې نوی ځای ولیکه:", localStorage.getItem(part));
+
+  if(newPlace){
+    localStorage.setItem(part, newPlace);
+    showParts();
+  }
+}
+function searchPart(){
+
+let part = document.getElementById("search").value;
+part = part.trim();
+let place = localStorage.getItem(part);
+
+if(place){
+document.getElementById("search").value = "";
+document.getElementById("result").innerHTML =
+part + " : " + place;
+
+}else{
+
+document.getElementById("result").innerHTML =
+"پرزه پیدا نه شوه";
+
+}
+
+}
+function backupParts(){
+
+let data = {};
+
+for(let i=0; i<localStorage.length; i++){
+
+let part = localStorage.key(i);
+data[part] = localStorage.getItem(part);
+
+}
+
+let file = new Blob(
+[JSON.stringify(data, null, 2)],
+{type:"application/json"}
+);
+
+let a = document.createElement("a");
+
+a.href = URL.createObjectURL(file);
+a.download = "RahmatParts-Backup.json";
+
+a.click();
+
+}
+function restoreParts(event){
+
+let file = event.target.files[0];
+
+let reader = new FileReader();
+
+reader.onload = function(){
+
+let data = JSON.parse(reader.result);
+
+for(let part in data){
+
+localStorage.setItem(part, data[part]);
+
+}
+
 showParts();
+
+};
+
+reader.readAsText(file);
+
 }
 </script>
+
 </body>
 </html>
-
